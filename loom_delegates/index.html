@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Delegates in Loom</title>
+
+		<meta name="description" content="Loom adds delegates to AS3.">
+		<meta name="author" content="Ben Garney">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>Delegates</h1>
+					<h3>in Loom</h3>
+					<p>
+						<small>By <a href="http://bengarney.com">Ben Garney</a> / <a href="http://theengine.co/">The Engine Co.</a></small>
+					</p>
+				</section>
+
+				<section>
+					<h2>Delegates?</h2>
+					<p>
+						Type-safe callbacks.<br>Simpler than W3C Events. Richer than Function.
+					</p>
+				</section>
+
+				<section>
+					<h2>Delegates</h2>
+						<pre><code data-trim contenteditable>delegate ResizeHandler(newX:int, newY:int);
+var resized:ResizeHandler;
+resized += function(x:int, y:int) 
+{
+	trace("New size " + x + "x" + y + "!");
+}</code></pre>
+				</section>
+
+				<section>
+					<h2>What do they do?</h2>
+					<ul>
+						<li>List of typed callbacks.</li>
+						<li>No return values.</li>
+						<li>No cancellation.</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Managing Delegates</h2>
+						<pre><code data-trim contenteditable>resized += myCallback; // Add a method.
+resized += function(a:int, b:int) { trace(a,b); }; // Add anon. function.
+resized -= myCallback; // Remove a method.
+resized = myCallback; // Reset list, add method.</code></pre>
+				</section>
+
+				<section>
+					<h2>Triggering Delegates</h2>
+						<pre><code data-trim contenteditable>resized(100, 200); // Call added callbacks!</code></pre>
+				</section>
+
+				<section>
+					<h2>NativeDelegate</h2>
+					<p><code>NativeDelegate</code> connects LoomScript and C++.</p>
+				</section>
+
+				<section>
+					<h2>NativeDelegate Features</h2>
+					<ul>
+						<li>Enforces correct thread.</li>
+						<li>Has a nice C++ API.</li>
+						<li>Otherwise just like a delegate!</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>NativeDelegates - C++</h2>
+					<pre><code data-trim contenteditable>// Declaring the delegate.
+LOOM_DELEGATE(Clicked); // An instance delegate declaration.
+
+LOOM_STATICDELEGATE(StaticClicked);        // Static decl.
+LS::NativeDelegate _StaticClickedDelegate; // ... and impl.
+
+// Using the delegate.
+_ClickedDelegate.pushArgument(1); // Add arguments.
+_ClickedDelegate.invoke();        // Fire the delegate
+
+// Binding the delegate
+.addVarAccessor("clicked", &MyClass::getClickedDelegate)
+.addStaticProperty("staticClicked", 
+			&MyClass::getStaticClickedDelegate)</code></pre>
+
+				</section>
+
+				<section>
+					<h2>NativeDelegates - Script</h2>
+					<pre><code data-trim contenteditable>// Declaring the delegate.
+public native var clicked:NativeDelegate;
+public static native var staticClicked:NativeDelegate;
+
+// Listening to the delegate.
+clicked += myCallback;</code></pre>
+				</section>
+
+				<section>
+					<h2>Strategies</h2>
+					<ul>
+						<li class="fragment">Delegates
+						<li class="fragment">Events
+						<li class="fragment">Signals
+						<li class="fragment">Function
+					</ul>
+				</section>
+
+				<section>
+					<h2>Conclusions</h2>
+					<p>Delegates are an awesome way<br>to handle callbacks.<br>Use them!</p>
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				width: 800,
+				height: 600,
+				margin: 0.05,
+				minScale: 0.1,
+				maxScale: 4.0,
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+					// { src: 'plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; } }
+					// { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
